@@ -18,7 +18,9 @@ You write `.java` → compiler makes `.class` (bytecode) → JVM runs that bytec
    .java  --(javac)-->  .class (bytecode)  --->  JVM  --->  runs on CPU
 ```
 
-**1) ClassLoader** — loads `.class` files into memory.
+**1) ClassLoader**
+   *Definition:* The ClassLoader is the part of the JVM that finds your `.class` files (the compiled bytecode) and loads them into memory so the program can use them. Think of it as the "loader/fetcher" that brings classes in only when they are first needed (lazy loading).
+
    Three types (parent-child order):
    - **Bootstrap** → loads core Java classes (java.lang.*, etc.)
    - **Extension/Platform** → loads extra library classes
@@ -26,23 +28,32 @@ You write `.java` → compiler makes `.class` (bytecode) → JVM runs that bytec
 
    Rule: **Delegation** — a loader first asks its parent to load. Only if parent can't, it loads itself. (Stops duplicate/fake core classes.)
 
-**2) Heap** — big shared memory where all **objects** live.
+**2) Heap**
+   *Definition:* The Heap is the large memory area where every object you create with `new` is actually stored. It is shared by all threads in the program, and it's the only area the Garbage Collector cleans up.
+
    - Every `new` object goes here.
    - Shared by all threads.
    - Garbage Collector cleans this area.
 
-**3) Stack** — one stack **per thread**. Stores method calls + local variables + references.
+**3) Stack**
+   *Definition:* The Stack is a per-thread memory area that keeps track of method calls — for each method it stores its local variables and references. When a method is called a block (frame) is added on top, and when the method finishes that block is removed automatically.
+
    - Each method call = one "stack frame".
    - When method ends, its frame is removed automatically.
    - Stores primitives (int, char) and *references* to heap objects.
 
-**4) Metaspace** — stores **class metadata** (info about classes: methods, fields, etc.).
+**4) Metaspace**
+   *Definition:* Metaspace is the memory area that stores information *about* your classes themselves — their structure, method definitions, field names, etc. (not the objects, but the "blueprint" of each class). It lives outside the heap in native OS memory.
+
    - Before Java 8 this was called **PermGen** (fixed size, caused `OutOfMemoryError: PermGen`).
    - From Java 8 → **Metaspace**, lives in native memory and grows automatically.
 
-**5) PC Register** — per thread, holds address of current instruction being executed.
+**5) PC Register**
+   *Definition:* The PC (Program Counter) Register is a small per-thread pointer that remembers which instruction the thread is currently running, so after switching between threads the JVM knows exactly where to continue.
 
-**6) Execution Engine** — runs the bytecode. Contains:
+**6) Execution Engine**
+   *Definition:* The Execution Engine is the part that actually *executes* the loaded bytecode and turns it into real work on the CPU. It reads instructions, runs them, and manages memory cleanup.
+
    - **Interpreter** → reads bytecode line by line (slow but starts fast).
    - **JIT (Just-In-Time) compiler** → converts hot/frequently-used code into native machine code (fast).
    - **GC** → garbage collector.
@@ -63,6 +74,8 @@ You write `.java` → compiler makes `.class` (bytecode) → JVM runs that bytec
 ---
 
 ## 2. JDK vs JRE vs JVM
+
+*Definition:* These are three layers of Java tooling. **JVM** is the engine that runs Java, **JRE** is the JVM plus the libraries needed to *run* programs, and **JDK** is the JRE plus the tools needed to *build* programs (like the compiler).
 
 Think of it like nested boxes: **JDK contains JRE contains JVM.**
 
@@ -100,15 +113,23 @@ s = null;   // the old Student object is now garbage
 ```
 
 ### How GC works (simple)
-Heap is split into **generations**:
-- **Young Generation** → new objects (most die young). Split into Eden + 2 Survivor spaces.
-- **Old (Tenured) Generation** → objects that survived many GC cycles.
-- **Minor GC** → cleans Young gen (frequent, fast).
-- **Major/Full GC** → cleans Old gen (slower).
+The heap is divided into areas called **generations**, based on the idea that *most objects die young* (used briefly then thrown away). Keeping new and old objects separate lets the GC clean the busy "young" area quickly and often.
 
-"Stop-the-world" = app pauses briefly while GC runs.
+- **Young Generation** → *Where brand-new objects are first created. Most objects live and die here quickly.* Split into Eden + 2 Survivor spaces.
+- **Old (Tenured) Generation** → *Where long-living objects move after surviving several cleanups in the young area.*
+- **Minor GC** → *A quick cleanup of only the Young generation. Happens frequently and is fast.*
+- **Major/Full GC** → *A bigger cleanup that includes the Old generation. Slower and less frequent.*
+
+**Stop-the-world** → *A short pause where the whole application freezes so the GC can safely clean memory. Smaller pauses = better user experience.*
 
 ### Types of Garbage Collectors — when to use what
+
+Quick definitions first, then the comparison table:
+- **Serial GC** → *Uses a single thread to clean memory. Simple, but freezes the app while running. Good only for small programs.*
+- **Parallel GC** → *Uses many threads to clean faster. Aims for maximum total work done (throughput), but still pauses the app. Good for batch jobs.*
+- **G1 GC** → *Splits the heap into many small regions and cleans the most-garbage-filled ones first, balancing speed and short pauses. The modern default.*
+- **ZGC** → *A newer collector built for extremely short pauses (under 1ms) even on huge heaps. Great for apps that must stay responsive.*
+- **Shenandoah** → *Another very-low-pause collector, similar goal to ZGC.*
 
 | Collector | How it works | Best for |
 |-----------|--------------|----------|
@@ -129,6 +150,8 @@ Heap is split into **generations**:
 ---
 
 ## 4. Memory Model (Stack vs Heap, Object Lifecycle)
+
+*Definition:* The **memory model** is simply how Java organizes and uses RAM while your program runs. The two main areas you must know are the **Stack** (fast, temporary, per-thread workspace for method calls) and the **Heap** (large, shared storage where all objects live).
 
 ### Stack vs Heap
 
@@ -237,6 +260,8 @@ int z = n;   // NullPointerException!
 
 ## 7. Generics (Wildcards, Bounded Types, Type Erasure)
 
+*Definition:* **Generics** let you write a class or method that works with *any* type, while still telling the compiler exactly which type you're using (like `List<String>` = a list that holds only Strings). This gives you type safety and removes the need for manual casting.
+
 **Why generics?** Type safety + no casting. Catch type errors at compile time.
 
 ```java
@@ -291,6 +316,8 @@ Consequences: can't do `new T()`, can't use `instanceof List<String>`, no generi
 
 ## 8. Collections Framework (List, Set, Map, Queue — internals)
 
+*Definition:* The **Collections Framework** is Java's ready-made set of classes for storing and managing groups of objects (lists, sets, maps, queues) — so you don't have to build data structures from scratch.
+
 Big picture:
 ```
 Collection (interface)
@@ -299,6 +326,12 @@ Collection (interface)
  └── Queue  → FIFO ordering
 Map (separate) → key-value pairs
 ```
+
+Quick definitions of the four main types:
+- **List** → *An ordered collection that keeps items in the sequence you add them and allows duplicates. You access items by index (position).*
+- **Set** → *A collection that stores only unique items — no duplicates allowed.*
+- **Queue** → *A collection that processes items in order, usually FIFO (First-In-First-Out) — like a line at a ticket counter.*
+- **Map** → *Stores data as key-value pairs (like a dictionary). Each key is unique and maps to one value.*
 
 ### List (ordered, duplicates allowed, index-based)
 | Class | Internals | Notes |
@@ -335,7 +368,14 @@ Map (separate) → key-value pairs
 
 ## 9. HashMap Internals (hashing, collision, resize, load factor)
 
-This is one of the **most asked** interview topics.
+*Definition:* A **HashMap** stores key-value pairs and uses a trick called **hashing** to find data almost instantly (O(1) on average) instead of searching one by one.
+
+This is one of the **most asked** interview topics. First learn the key words:
+- **Hashing** → *Converting a key into a number (a hash) so the map can jump straight to where the value is stored.*
+- **Bucket** → *A slot in the internal array where entries are kept. The hash decides which bucket a key goes into.*
+- **Collision** → *When two different keys end up in the same bucket. The map then stores them together in that bucket.*
+- **Load factor** → *How full the map is allowed to get (default 0.75 = 75%) before it grows itself.*
+- **Resize (rehash)** → *When the map gets too full, it makes a bigger array and re-places all entries into new buckets.*
 
 ### How HashMap stores data
 - Internally it's an **array of "buckets"** (default size **16**).
@@ -377,6 +417,10 @@ System.out.println(m.get("a")); // 2
 
 ## 10. ConcurrentHashMap vs HashMap vs Hashtable
 
+*Definition:* All three store key-value pairs. The real difference is **thread safety** — whether they work correctly when *many threads (multiple tasks at once)* use them at the same time.
+
+> **Thread-safe** → *Safe to use from multiple threads at once without data getting corrupted.* The downside is usually some speed cost from "locking" (making threads wait their turn).
+
 All store key-value pairs. Difference = **thread safety & performance**.
 
 | Feature | HashMap | Hashtable | ConcurrentHashMap |
@@ -399,6 +443,8 @@ All store key-value pairs. Difference = **thread safety & performance**.
 ---
 
 ## 11. Comparable vs Comparator
+
+*Definition:* Both are tools that tell Java **how to sort your custom objects** (Java can't guess whether to sort Students by name or marks, so you define the rule). The difference is *where* you write that rule.
 
 Both are used for **sorting** objects. Difference = where the sorting logic lives.
 
@@ -468,6 +514,8 @@ public final class Point {
 ```
 
 ### The `final` keyword (3 uses)
+*Definition:* `final` means **"this cannot be changed."** What exactly can't change depends on where you put it — on a variable, a method, or a class.
+
 | Used on | Meaning |
 |---------|---------|
 | **variable** | Value can't be reassigned (constant) |
