@@ -6,12 +6,13 @@
 
 ## 1. The 4 Pillars of OOP
 
-OOP = Object-Oriented Programming = organizing code around **objects** (real-world things) instead of just functions. The 4 pillars are the foundation.
+*Definition:* **OOP (Object-Oriented Programming)** is a way of writing code by modeling it as real-world **objects** (things that have data + actions) instead of just a list of functions. The 4 pillars below are the core ideas that make OOP work.
 
 Memory trick: **"A PIE"** → **A**bstraction, **P**olymorphism, **I**nheritance, **E**ncapsulation.
 
 ### Pillar 1 — Abstraction (hide complexity, show only what's needed)
-Show **what** something does, hide **how** it does it.
+*Definition:* **Abstraction** means showing only the *essential* features of something and hiding the messy inner details — you expose **what** it does, not **how** it does it.
+
 Real life: You drive a car using the steering and pedals. You don't know how the engine works internally. The engine details are *abstracted* away.
 
 ```java
@@ -25,7 +26,8 @@ class Tesla extends Car {
 Achieved using: **abstract classes** and **interfaces**.
 
 ### Pillar 2 — Encapsulation (data hiding + bundling)
-Wrap data (variables) + methods together in one class, and **protect** the data using `private`. Outside code can only touch it through controlled methods (getters/setters).
+*Definition:* **Encapsulation** means bundling data (variables) and the methods that work on it inside one class, and **protecting** that data with `private` so outside code can only change it through safe, controlled methods (getters/setters).
+
 Real life: A medicine capsule — the powder (data) is wrapped safely inside.
 
 ```java
@@ -40,7 +42,8 @@ class Account {
 Benefit: you control how data is accessed/changed → fewer bugs.
 
 ### Pillar 3 — Inheritance (reuse code from a parent)
-A child class **gets** the fields and methods of a parent class. Promotes reuse.
+*Definition:* **Inheritance** lets one class (child) automatically reuse the fields and methods of another class (parent), so you don't rewrite the same code — the child just adds or changes what's different.
+
 Real life: A child inherits features from parents.
 
 ```java
@@ -57,7 +60,8 @@ d.bark();  // own
 `extends` keyword. "Dog **is-a** Animal" relationship.
 
 ### Pillar 4 — Polymorphism (one name, many forms)
-Same method name behaves **differently** depending on the object.
+*Definition:* **Polymorphism** ("many forms") means the same method name can behave **differently** depending on which object is using it — one interface, many implementations.
+
 Real life: The word "cut" — cut hair, cut a cake, cut a deal. Same word, different action.
 
 Two types:
@@ -78,10 +82,12 @@ a.sound();              // "Meow" -> decided at RUNTIME
 
 ## 2. SOLID Principles (with real examples)
 
+*Definition:* **SOLID** is a set of 5 guidelines that help you write classes that are easy to understand, change, and reuse without breaking other parts of the code. Each letter stands for one principle.
+
 SOLID = 5 design rules for clean, maintainable, flexible code. Each letter = one principle.
 
 ### S — Single Responsibility Principle (SRP)
-A class should have **only ONE job / one reason to change.**
+*Definition:* A class should have **only ONE job / one reason to change.** If a class does many unrelated things, a change to one thing can accidentally break the others.
 
 ❌ Bad — one class doing everything:
 ```java
@@ -100,8 +106,7 @@ class ReportService  { void generateReport() {} }
 Why: if email logic changes, you only touch `EmailService`, nothing else breaks.
 
 ### O — Open/Closed Principle (OCP)
-Code should be **open for extension, closed for modification.**
-You should add new features by **adding new code**, not editing old, working code.
+*Definition:* Code should be **open for extension, closed for modification** — meaning you add new behavior by writing *new* code, not by editing existing, already-working code (which risks breaking it).
 
 ❌ Bad — must edit existing method for each new shape:
 ```java
@@ -121,7 +126,8 @@ class Square implements Shape { public double area(){ return s*s; } }
 ```
 
 ### L — Liskov Substitution Principle (LSP)
-A child class should be **usable anywhere its parent is used**, without breaking things.
+*Definition:* A child class should be **usable anywhere its parent is used**, without surprising or breaking the program. If swapping a parent for its child causes errors, the inheritance is wrong.
+
 "If it looks like a duck but needs batteries, your abstraction is wrong."
 
 ❌ Bad — Penguin can't fly, breaks the parent's promise:
@@ -139,7 +145,7 @@ class Penguin extends Bird {}   // no fly() promise to break
 ```
 
 ### I — Interface Segregation Principle (ISP)
-Don't force a class to implement methods it **doesn't need**. Prefer many small interfaces over one big fat interface.
+*Definition:* Don't force a class to implement methods it **doesn't need**. It's better to have many small, focused interfaces than one big "fat" interface full of unrelated methods.
 
 ❌ Bad — robot forced to implement eat():
 ```java
@@ -157,8 +163,7 @@ class Robot implements Workable { public void work() {} }   // only what it need
 ```
 
 ### D — Dependency Inversion Principle (DIP)
-Depend on **abstractions (interfaces)**, not on concrete classes.
-High-level code shouldn't be glued to low-level details.
+*Definition:* Your important (high-level) code should depend on **abstractions (interfaces)**, not on specific concrete classes — so you can swap the details (like changing the database) without rewriting the main logic.
 
 ❌ Bad — class locked to MySQL directly:
 ```java
@@ -183,6 +188,8 @@ class Service {
 ---
 
 ## 3. Composition over Inheritance
+
+*Definition:* **Composition** means building a class by *holding other objects inside it* (a "has-a" relationship) instead of inheriting from a parent ("is-a"). The principle "composition over inheritance" says: prefer holding objects over extending classes, because it's more flexible.
 
 Two ways to reuse code between classes:
 - **Inheritance** → "**is-a**" (Dog is-a Animal). Uses `extends`.
@@ -221,6 +228,8 @@ Now you can swap `Engine` for `ElectricEngine` easily without changing the hiera
 Both let you achieve abstraction, but they're used differently.
 
 ### Abstract class
+*Definition:* An **abstract class** is a half-finished parent class — it can have some ready-made methods (with code) *and* some empty methods that child classes must fill in. You can't create an object of it directly; it exists to be extended.
+
 - Declared with `abstract`. **Cannot be instantiated** (no `new`).
 - Can have **both** abstract methods (no body) **and** normal methods (with body).
 - Can have **constructors, fields (state), and any access modifiers**.
@@ -236,6 +245,8 @@ abstract class Animal {
 ```
 
 ### Interface
+*Definition:* An **interface** is a pure "contract" — a list of methods a class promises to provide, with no implementation details. It says *what* a class can do, not *how*. A class can sign many such contracts at once.
+
 - Declared with `interface`. A pure "contract" of what methods a class must have.
 - Methods are `public abstract` by default. (Since Java 8 can have `default` and `static` methods with body; since Java 9 `private` methods too.)
 - Variables are `public static final` (constants) by default.
@@ -275,6 +286,8 @@ class Duck implements Flyable, Swimmable {   // multiple!
 These measure code quality. Goal: **High Cohesion, Low Coupling.**
 
 ### Cohesion — how focused a class is
+*Definition:* **Cohesion** measures how well everything inside one class **belongs together** and works toward a single purpose. (You want this HIGH.)
+
 How well the things inside a class **belong together**.
 - **High cohesion (good)** → class does one clear job, all methods relate to it.
 - **Low cohesion (bad)** → class does random unrelated things.
@@ -295,6 +308,8 @@ class Utility {
 ```
 
 ### Coupling — how dependent classes are on each other
+*Definition:* **Coupling** measures how much one class **depends on** another. Tightly tied classes break together; loosely tied ones can change independently. (You want this LOW.)
+
 How much one class **relies on** another.
 - **Low coupling (good)** → classes are independent; changing one doesn't break others.
 - **High coupling (bad)** → classes tangled together; one change breaks many.
@@ -321,7 +336,8 @@ class A {
 Three short rules to keep code clean.
 
 ### DRY — Don't Repeat Yourself
-Don't copy-paste the same logic in many places. Write it **once**, reuse it.
+*Definition:* **DRY** says write each piece of logic **once** and reuse it, instead of copy-pasting it. Then a change only needs to happen in one place.
+
 If you change repeated code, you'd have to change it everywhere = bugs.
 
 ❌ Repeated:
@@ -335,7 +351,7 @@ double tax(double price){ return price * 0.18; }   // one place
 ```
 
 ### KISS — Keep It Simple, Stupid
-Write the **simplest** solution that works. Don't over-engineer or be clever for no reason. Simple code = easy to read and maintain.
+*Definition:* **KISS** says always pick the **simplest** solution that works. Don't add clever or complicated code just to show off — simple code is easier to read, fix, and maintain.
 
 ❌ Over-complicated:
 ```java
@@ -347,7 +363,7 @@ boolean isEven(int n){ return n % 2 == 0; }
 ```
 
 ### YAGNI — You Aren't Gonna Need It
-Don't build features "just in case" for the future. Only build what's needed **now**. Extra unused code = wasted effort + more bugs to maintain.
+*Definition:* **YAGNI** says don't build features "just in case" you might need them later. Build only what's needed **right now** — unused code wastes effort and adds bugs to maintain.
 
 Example: Don't add support for 10 payment methods when the app only uses one. Add them when actually required.
 
@@ -360,8 +376,7 @@ Example: Don't add support for 10 payment methods when the app only uses one. Ad
 Both involve methods with the same name — but they're very different.
 
 ### Overloading (compile-time polymorphism)
-**Same method name, different parameters**, in the **same class**.
-The compiler decides which one to call based on arguments → "compile-time".
+*Definition:* **Overloading** is having multiple methods with the **same name but different parameters** in the same class. Java picks the right one based on the arguments you pass — and this choice is made at compile time.
 
 ```java
 class Printer {
@@ -373,8 +388,7 @@ class Printer {
 Rules: must differ in number/type/order of parameters. Return type alone is NOT enough.
 
 ### Overriding (runtime polymorphism)
-**Child class redefines a parent's method** with the **same signature** (same name + same parameters).
-The actual object decides which version runs → "runtime".
+*Definition:* **Overriding** is when a **child class rewrites a parent's method** using the exact same signature (same name + same parameters) to give it new behavior. Which version runs is decided at runtime, based on the actual object.
 
 ```java
 class Animal { void sound(){ System.out.println("some sound"); } }
@@ -401,6 +415,8 @@ Rules: same signature, child can't reduce visibility, use `@Override` annotation
 ---
 
 ## 8. Covariant Return Types
+
+*Definition:* A **covariant return type** means that when a child overrides a parent's method, the child is allowed to return a **more specific type** (a subclass) than the parent did — instead of being forced to return the exact same type.
 
 A nice rule connected to **overriding**.
 
@@ -430,9 +446,13 @@ Dog d = new Dog().reproduce();   // already a Dog, no cast required
 
 ## 9. Static vs Instance (methods & variables)
 
+*Definition:* The difference is about *ownership*. **Static** members belong to the **class itself** (one shared copy for everyone), while **instance** members belong to **each object** (every object gets its own separate copy).
+
 The `static` keyword means something belongs to the **class itself**, not to individual objects.
 
 ### Instance members (default — per object)
+*Definition:* **Instance members** are variables/methods that belong to a specific object. Each object you create gets its own personal copy, so you need an object to use them.
+
 Each object gets its **own copy**. Need an object to use them.
 ```java
 class Student {
@@ -445,6 +465,8 @@ s.show();
 ```
 
 ### Static members (shared — one for whole class)
+*Definition:* **Static members** belong to the class, not to any object. There's just **one shared copy** used by everyone, and you call them using the class name — no object needed.
+
 **One copy shared** by all objects. Called using the **class name**, no object needed.
 ```java
 class Counter {
